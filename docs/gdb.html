@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en" data-color-mode="dark">
+<head>
+<meta charset="utf-8">
+<title>GDB 备忘清单
+ &#x26;  gdb cheatsheet &#x26;  Quick Ref</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta description="本清单提供了对 GDB 的入门简要概述，以及 GDB 常用示例，完整文档参阅 Debugging with gdb，该文档最后有 GDB index，可以快速查找命令。
+
+入门，为开发人员分享快速参考备忘单。">
+<meta keywords="gdb,reference,Quick,Reference,cheatsheet,cheat,sheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20height%3D%221em%22%20width%3D%221em%22%3E%20%3Cpath%20d%3D%22m21.66%2010.44-.98%204.18c-.84%203.61-2.5%205.07-5.62%204.77-.5-.04-1.04-.13-1.62-.27l-1.68-.4c-4.17-.99-5.46-3.05-4.48-7.23l.98-4.19c.2-.85.44-1.59.74-2.2%201.17-2.42%203.16-3.07%206.5-2.28l1.67.39c4.19.98%205.47%203.05%204.49%207.23Z%22%20fill%3D%22%23c9d1d9%22%2F%3E%20%3Cpath%20d%3D%22M15.06%2019.39c-.62.42-1.4.77-2.35%201.08l-1.58.52c-3.97%201.28-6.06.21-7.35-3.76L2.5%2013.28c-1.28-3.97-.22-6.07%203.75-7.35l1.58-.52c.41-.13.8-.24%201.17-.31-.3.61-.54%201.35-.74%202.2l-.98%204.19c-.98%204.18.31%206.24%204.48%207.23l1.68.4c.58.14%201.12.23%201.62.27Zm2.43-8.88c-.06%200-.12-.01-.19-.02l-4.85-1.23a.75.75%200%200%201%20.37-1.45l4.85%201.23a.748.748%200%200%201-.18%201.47Z%22%20fill%3D%22%23228e6c%22%20%2F%3E%20%3Cpath%20d%3D%22M14.56%2013.89c-.06%200-.12-.01-.19-.02l-2.91-.74a.75.75%200%200%201%20.37-1.45l2.91.74c.4.1.64.51.54.91-.08.34-.38.56-.72.56Z%22%20fill%3D%22%23228e6c%22%20%2F%3E%20%3C%2Fsvg%3E" type="image/svg+xml">
+<link rel="stylesheet" href="..\style\style.css">
+<link rel="stylesheet" href="..\style\katex.css">
+</head>
+<body><nav class="header-nav"><div class="max-container"><a href="..\index.html" class="logo"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" height="1em" width="1em">
+  <path d="m21.66 10.44-.98 4.18c-.84 3.61-2.5 5.07-5.62 4.77-.5-.04-1.04-.13-1.62-.27l-1.68-.4c-4.17-.99-5.46-3.05-4.48-7.23l.98-4.19c.2-.85.44-1.59.74-2.2 1.17-2.42 3.16-3.07 6.5-2.28l1.67.39c4.19.98 5.47 3.05 4.49 7.23Z" fill="#c9d1d9"></path>
+  <path d="M15.06 19.39c-.62.42-1.4.77-2.35 1.08l-1.58.52c-3.97 1.28-6.06.21-7.35-3.76L2.5 13.28c-1.28-3.97-.22-6.07 3.75-7.35l1.58-.52c.41-.13.8-.24 1.17-.31-.3.61-.54 1.35-.74 2.2l-.98 4.19c-.98 4.18.31 6.24 4.48 7.23l1.68.4c.58.14 1.12.23 1.62.27Zm2.43-8.88c-.06 0-.12-.01-.19-.02l-4.85-1.23a.75.75 0 0 1 .37-1.45l4.85 1.23a.748.748 0 0 1-.18 1.47Z" fill="#228e6c"></path>
+  <path d="M14.56 13.89c-.06 0-.12-.01-.19-.02l-2.91-.74a.75.75 0 0 1 .37-1.45l2.91.74c.4.1.64.51.54.91-.08.34-.38.56-.72.56Z" fill="#228e6c"></path>
+</svg>
+<span class="title">Quick Ref</span></a><div class="menu"><a href="javascript:void(0);" class="searchbtn" id="searchbtn"><svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" viewBox="0 0 18 18">
+  <path fill="currentColor" d="M17.71,16.29 L14.31,12.9 C15.4069846,11.5024547 16.0022094,9.77665502 16,8 C16,3.581722 12.418278,0 8,0 C3.581722,0 0,3.581722 0,8 C0,12.418278 3.581722,16 8,16 C9.77665502,16.0022094 11.5024547,15.4069846 12.9,14.31 L16.29,17.71 C16.4777666,17.8993127 16.7333625,18.0057983 17,18.0057983 C17.2666375,18.0057983 17.5222334,17.8993127 17.71,17.71 C17.8993127,17.5222334 18.0057983,17.2666375 18.0057983,17 C18.0057983,16.7333625 17.8993127,16.4777666 17.71,16.29 Z M2,8 C2,4.6862915 4.6862915,2 8,2 C11.3137085,2 14,4.6862915 14,8 C14,11.3137085 11.3137085,14 8,14 C4.6862915,14 2,11.3137085 2,8 Z"></path>
+</svg><span>搜索</span></a><button id="darkMode" type="button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="light" height="1em" width="1em">
+  <path d="M6.995 12c0 2.761 2.246 5.007 5.007 5.007s5.007-2.246 5.007-5.007-2.246-5.007-5.007-5.007S6.995 9.239 6.995 12zM11 19h2v3h-2zm0-17h2v3h-2zm-9 9h3v2H2zm17 0h3v2h-3zM5.637 19.778l-1.414-1.414 2.121-2.121 1.414 1.414zM16.242 6.344l2.122-2.122 1.414 1.414-2.122 2.122zM6.344 7.759 4.223 5.637l1.415-1.414 2.12 2.122zm13.434 10.605-1.414 1.414-2.122-2.122 1.414-1.414z"></path>
+</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="dark" height="1em" width="1em">
+  <path d="M12 11.807A9.002 9.002 0 0 1 10.049 2a9.942 9.942 0 0 0-5.12 2.735c-3.905 3.905-3.905 10.237 0 14.142 3.906 3.906 10.237 3.905 14.143 0a9.946 9.946 0 0 0 2.735-5.119A9.003 9.003 0 0 1 12 11.807z"></path>
+</svg>
+</button><script src="../js/dark.js?v=1.3.4"></script><a href="https://github.com/jaywcjlove/reference" class="" target="__blank"><svg viewBox="0 0 16 16" fill="currentColor" height="1em" width="1em"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg></a></div></div></nav><div class="wrap h1body-exist max-container"><header class="wrap-header h1wrap"><h1 id="gdb-备忘清单"><svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="currentColor" height="1em" width="1em">
+  <path d="M107.946667 838.4l57.173333 23.893333v-385.28l-103.68 250.026667c-17.493333 43.52 3.413333 93.44 46.506667 111.36z m832-157.866667L728.32 169.813333a85.888 85.888 0 0 0-77.226667-52.48c-11.093333 0-22.613333 1.706667-33.706666 6.4L302.933333 253.866667a85.290667 85.290667 0 0 0-46.08 110.933333l211.626667 510.72a85.248 85.248 0 0 0 110.933333 46.08l314.026667-130.133333a85.077333 85.077333 0 0 0 46.506667-110.933334zM336.213333 373.333333c-23.466667 0-42.666667-19.2-42.666666-42.666666s19.2-42.666667 42.666666-42.666667 42.666667 19.2 42.666667 42.666667-19.2 42.666667-42.666667 42.666666z m-85.333333 469.333334c0 46.933333 38.4 85.333333 85.333333 85.333333h61.866667l-147.2-355.84v270.506667z"></path>
+</svg><a aria-hidden="true" tabindex="-1" href="#gdb-备忘清单"><span class="icon icon-link"></span></a>GDB 备忘清单</h1><div class="wrap-body">
+<p>本清单提供了对 <a href="https://en.wikipedia.org/wiki/GNU_Debugger">GDB</a> 的入门简要概述，以及 <code>GDB</code> 常用示例，完整文档参阅 <a href="https://www.eecs.umich.edu/courses/eecs373/readings/Debugger.pdf">Debugging with gdb</a>，该文档最后有 <code>GDB index</code>，可以快速查找命令。</p>
+</div></header><div class="menu-tocs"><div class="menu-btn"><svg aria-hidden="true" fill="currentColor" height="1em" width="1em" viewBox="0 0 16 16" version="1.1" data-view-component="true">
+  <path fill-rule="evenodd" d="M2 4a1 1 0 100-2 1 1 0 000 2zm3.75-1.5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zm0 5a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5zM3 8a1 1 0 11-2 0 1 1 0 012 0zm-1 6a1 1 0 100-2 1 1 0 000 2z"></path>
+</svg></div><div class="menu-modal"><a aria-hidden="true" class="leve2 tocs-link" data-num="2" href="#入门">入门</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#常用命令">常用命令</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#启动调试">启动调试</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#core-dump-文件">core dump 文件</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#查看源码">查看源码</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#流程控制">流程控制</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#断点命令">断点命令</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#watch-命令">watch 命令</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#查看变量">查看变量</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#frame-栈帧">frame 栈帧</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#函数调用">函数调用</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#信号">信号</a><a aria-hidden="true" class="leve3 tocs-link" data-num="3" href="#线程">线程</a><a aria-hidden="true" class="leve2 tocs-link" data-num="2" href="#另见">另见</a></div></div><div class="h1wrap-body"><div class="wrap h2body-exist"><div class="wrap-header h2wrap"><h2 id="入门"><a aria-hidden="true" tabindex="-1" href="#入门"><span class="icon icon-link"></span></a>入门</h2><div class="wrap-body">
+<!--rehype:body-class=cols-2-->
+</div></div><div class="h2wrap-body cols-2"><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="常用命令"><a aria-hidden="true" tabindex="-1" href="#常用命令"><span class="icon icon-link"></span></a>常用命令</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+<p><code>[]</code> 内为命令缩写</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table class="left-align"><thead><tr><th align="left">命令 <code>[缩写]</code></th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>help[h]</code></td><td align="left"><strong>查看命令帮助</strong>。如 <code>help run</code></td></tr><tr><td align="left"><code>run[r]</code></td><td align="left"><strong>运行程序</strong>。可搭配参数使用</td></tr><tr><td align="left"><code>start</code></td><td align="left"><strong>运行程序，停在第一条执行语句</strong>。可搭配参数使用</td></tr><tr><td align="left"><code>list[l]</code></td><td align="left"><strong>查看程序源码</strong></td></tr><tr><td align="left"><code>break[b]</code></td><td align="left"><strong>设置断点</strong>。可指定文件名、函数名和行号等参数来设置断点</td></tr><tr><td align="left"><code>watch</code></td><td align="left"><strong>设置监视点</strong>。当监视的变量发生更改时，程序会被中断</td></tr><tr><td align="left"><code>delete</code></td><td align="left"><strong>删除断点等</strong>。可用于删除断点、监视点、<code>display</code> 等</td></tr><tr><td align="left"><code>continue[c]</code></td><td align="left"><strong>继续执行程序</strong>。让程序继续执行，到下一个断点或程序结束</td></tr><tr><td align="left"><code>next[n]</code></td><td align="left"><strong>单步执行程序，跳过函数调用</strong></td></tr><tr><td align="left"><code>step[s]</code></td><td align="left"><strong>单步执行程序，进入函数调用</strong></td></tr><tr><td align="left"><code>finish</code></td><td align="left"><strong>结束当前函数</strong>。返回到函数调用点</td></tr><tr><td align="left"><code>kill</code></td><td align="left"><strong>杀死当前的调试进程</strong></td></tr><tr><td align="left"><code>backtrace[bt]</code></td><td align="left"><strong>查看函数调用栈</strong>。它会打印出当前的函数调用栈</td></tr><tr><td align="left"><code>frame[fr]</code></td><td align="left"><strong>切换栈帧</strong>。以查看该栈帧中的局部变量和参数等</td></tr><tr><td align="left"><code>info</code></td><td align="left"><strong>查看程序状态信息</strong>。例如断点、寄存器、线程、局部变量等</td></tr><tr><td align="left"><code>show</code></td><td align="left"><strong>查看 <code>gdb</code> 配置信息</strong>。与 <code>info</code> 不同， <code>show</code> 查看 <code>GDB</code> 本身的配置信息</td></tr><tr><td align="left"><code>set</code></td><td align="left"><strong>设置变量值</strong>。有时指定变量类型才能设置，如 <code>set *(int*)(&#x26;a) = 3</code></td></tr><tr><td align="left"><code>whatis</code></td><td align="left"><strong>查看变量、函数类型</strong>。例如，<code>whatis a</code> 可以显示变量 <code>a</code> 的类型</td></tr><tr><td align="left"><code>ptype</code></td><td align="left"><strong>查看变量、函数类型</strong>。会显示完整的结构体类型</td></tr><tr><td align="left"><code>print[p]</code></td><td align="left"><strong>打印变量的值</strong>。例如，<code>print x</code> 可以显示变量 <code>x</code> 的当前值</td></tr><tr><td align="left"><code>display</code></td><td align="left"><strong>持续打印变量的值</strong>。与 <code>print</code> 类似，但它会在每次停下时自动输出值</td></tr><tr><td align="left"><code>thread</code></td><td align="left"><strong>切换线程</strong>。例如，<code>thread 2</code> 切换到编号为 <code>2</code> 的线程</td></tr><tr><td align="left"><code>signal</code></td><td align="left"><strong>向进程发送信号</strong>。例如，<code>signal 9</code> 发送编号为 <code>9</code> 的信号</td></tr></tbody></table>
+<!--rehype:className=left-align-->
+</div></div></div><div class="wrap h3body-not-exist"><div class="wrap-header h3wrap"><h3 id="启动调试"><a aria-hidden="true" tabindex="-1" href="#启动调试"><span class="icon icon-link"></span></a>启动调试</h3><div class="wrap-body">
+<p>启动进程，不带参数</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token comment"># gdb &#x3C;program></span>
+</span><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> run
+</span></code></pre>
+<p>启动进程，带参数 <code>&#x3C;args></code></p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token comment"># gdb &#x3C;program></span>
+</span><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> run <span class="token operator">&#x3C;</span>args<span class="token operator">></span>
+</span></code></pre>
+<p>启动 <code>gdb</code> 时传入参数，<code>run</code> 就不用传入了</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token comment"># gdb --args &#x3C;program> 1 2 3</span>
+</span><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> run
+</span></code></pre>
+<p>通过 <code>set</code> 设置参数</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token comment"># gdb &#x3C;program></span>
+</span><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> <span class="token builtin class-name">set</span> args <span class="token number">1</span> <span class="token number">2</span> <span class="token number">3</span>
+</span><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> run
+</span></code></pre>
+<p>显示运行时将要或已经传递给程序的参数</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> show args
+</span></code></pre>
+<p>在启动进程前，添加环境变量</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> <span class="token builtin class-name">set</span> <span class="token function">env</span> DEBUG <span class="token number">1</span>
+</span></code></pre>
+<p>在启动进程前，清除环境变量</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> <span class="token builtin class-name">unset</span> <span class="token function">env</span> DEBUG
+</span></code></pre>
+<p>通过进程号 <code>123</code> 连接到正在运行的进程</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> attach <span class="token number">123</span>
+</span></code></pre>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="core-dump-文件"><a aria-hidden="true" tabindex="-1" href="#core-dump-文件"><span class="icon icon-link"></span></a>core dump 文件</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+<p>默认情况下，<code>linux</code> 系统中程序崩溃时也不会生成 <code>core dump</code> 文件，需要先启用</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token builtin class-name">ulimit</span> <span class="token parameter variable">-c</span> unlimited
+</span><span class="code-line"><span class="token builtin class-name">echo</span> <span class="token string">"/tmp/core-%e-%p-%t"</span> <span class="token operator">></span> /proc/sys/kernel/core_pattern
+</span></code></pre>
+<p>调试 <code>core</code> 文件</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line">gdb program /tmp/core-file
+</span></code></pre>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="查看源码"><a aria-hidden="true" tabindex="-1" href="#查看源码"><span class="icon icon-link"></span></a>查看源码</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) list 30</code></td><td align="left">查看第 <code>30</code> 行为中心的上下 <code>5</code> 行源码</td></tr><tr><td align="left"><code>(gdb) list main</code></td><td align="left">查看 <code>main</code> 函数为中心的上下 <code>5</code> 行源码</td></tr><tr><td align="left"><code>(gdb) list file.c:30</code></td><td align="left">查看 <code>file.c</code> 文件中 <code>30</code> 行的源码</td></tr><tr><td align="left"><code>(gdb) list file.c:main</code></td><td align="left">查看 <code>file.c</code> 文件中 <code>main</code> 函数</td></tr><tr><td align="left"><code>(gdb) disassemble</code></td><td align="left">查看当前可执行文件的汇编源码</td></tr><tr><td align="left"><code>(gdb) disassemble myfun</code></td><td align="left">查看指定函数的汇编源码</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="流程控制"><a aria-hidden="true" tabindex="-1" href="#流程控制"><span class="icon icon-link"></span></a>流程控制</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) step[s]</code></td><td align="left">执行源码级别的单步进入操作</td></tr><tr><td align="left"><code>(gdb) stepi[si]</code></td><td align="left">执行指令级别的单步进入操作</td></tr><tr><td align="left"><code>(gdb) next[n]</code></td><td align="left">执行源码级别的单步跳过操作</td></tr><tr><td align="left"><code>(gdb) nexti[ni]</code></td><td align="left">执行指令级别的单步跳过操作</td></tr><tr><td align="left"><code>(gdb) continue[c]</code></td><td align="left">继续执行，到下一个断点或程序结束</td></tr><tr><td align="left"><code>(gdb) finish</code></td><td align="left">运行完当前函数，并返回到函数调用点</td></tr><tr><td align="left"><code>(gdb) return</code></td><td align="left">直接退出当前函数，不执行剩下代码块</td></tr><tr><td align="left"><code>(gdb) return expression</code></td><td align="left">可以指定返回值的内容</td></tr><tr><td align="left"><code>(gdb) until</code></td><td align="left">结束当前循环</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="断点命令"><a aria-hidden="true" tabindex="-1" href="#断点命令"><span class="icon icon-link"></span></a>断点命令</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) break main</code></td><td align="left">在所有名为 <code>main</code> 的函数处设置一个断点</td></tr><tr><td align="left"><code>(gdb) break test.c:12</code></td><td align="left">在文件 <code>test.c</code> 的第 <code>12</code> 行设置断点</td></tr><tr><td align="left"><code>(gdb) break test.c:func</code></td><td align="left">在文件 <code>test.c</code> 的 <code>func</code> 函数处设置断点</td></tr><tr><td align="left"><code>(gdb) rbreak regular-expression</code></td><td align="left">在正则表达式匹配的函数名上设置断点</td></tr><tr><td align="left"><code>(gdb) break foo if a &#x3C; 100</code></td><td align="left">设置<strong>条件断点</strong>，条件满足才停止</td></tr><tr><td align="left"><code>(gdb) info break</code></td><td align="left">列出所有断点位置、编号</td></tr><tr><td align="left"><code>(gdb) delete 2</code></td><td align="left">删除指定编号的断点</td></tr><tr><td align="left"><code>(gdb) clear</code></td><td align="left">删除刚才停止处的断点</td></tr><tr><td align="left"><code>(gdb) disable 1</code></td><td align="left"><code>disable</code> 指定编号的断点</td></tr><tr><td align="left"><code>(gdb) enable 1</code></td><td align="left"><code>enable</code> 指定编号的断点</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist"><div class="wrap-header h3wrap"><h3 id="watch-命令"><a aria-hidden="true" tabindex="-1" href="#watch-命令"><span class="icon icon-link"></span></a>watch 命令</h3><div class="wrap-body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) watch var</code></td><td align="left">监视变量，当值变化时会输出新、旧值</td></tr><tr><td align="left"><code>(gdb) info break</code></td><td align="left">列出断点，也包括 <code>watchpoint</code></td></tr><tr><td align="left"><code>(gdb) i watch</code></td><td align="left">只列出 <code>watchpoint</code></td></tr><tr><td align="left"><code>(gdb) delete 1</code></td><td align="left">删除指定的 <code>watchpoint</code></td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="查看变量"><a aria-hidden="true" tabindex="-1" href="#查看变量"><span class="icon icon-link"></span></a>查看变量</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) info args</code></td><td align="left">查看传入参数信息</td></tr><tr><td align="left"><code>(gdb) info local</code></td><td align="left">查看当前栈帧（函数）的本地变量</td></tr><tr><td align="left"><code>(gdb) print var</code></td><td align="left">查看指定变量的值</td></tr><tr><td align="left"><code>(gdb) print/x var</code></td><td align="left">以十六进制输出变量的值</td></tr><tr><td align="left"><code>(gdb) print ptr</code></td><td align="left">假设 <code>int *ptr=&#x26;a</code>，输出变量 <code>a</code> 的地址</td></tr><tr><td align="left"><code>(gdb) print *ptr</code></td><td align="left">假设 <code>int *ptr=&#x26;a</code>，输出变量 <code>a</code> 的值</td></tr><tr><td align="left"><code>(gdb) print *ptr@5</code></td><td align="left">假设 <code>int ptr[5]</code>，输出数组的值</td></tr><tr><td align="left"><code>(gdb) display var</code></td><td align="left">与 <code>print</code> 作用相同，但每次停下来都自动输出变量的值</td></tr><tr><td align="left"><code>(gdb) info display</code></td><td align="left">列出所有设置了 <code>display</code> 的变量</td></tr><tr><td align="left"><code>(gdb) undisplay 1</code></td><td align="left">与 <code>display</code> 相反，不能指定变量名，只能是编号</td></tr><tr><td align="left"><code>(gdb) delete display 1</code></td><td align="left">与 <code>undisplay</code> 类似，通过编号取消显示</td></tr><tr><td align="left"><code>(gdb) whatis var</code></td><td align="left">查看变量类型</td></tr><tr><td align="left"><code>(gdb) ptype var</code></td><td align="left">比 <code>type</code> 更详细，会给出结构体的定义</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist"><div class="wrap-header h3wrap"><h3 id="frame-栈帧"><a aria-hidden="true" tabindex="-1" href="#frame-栈帧"><span class="icon icon-link"></span></a>frame 栈帧</h3><div class="wrap-body">
+<p>每当一个函数被调用时，一个新的栈帧 <code>frame</code> 就会被压入栈中，栈帧包含了该函数的局部变量、参数、返回地址和其他信息，当函数执行完毕后，这个栈帧会被弹出栈并销毁。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) frame</code></td><td align="left">显示当前栈帧和源代码行</td></tr><tr><td align="left"><code>(gdb) backtrace</code></td><td align="left">打印出当前正在执行的所有栈帧</td></tr><tr><td align="left"><code>(gdb) backtrace 5</code></td><td align="left">只显示最近调用的 <code>5</code> 个栈帧</td></tr><tr><td align="left"><code>(gdb) frame 2</code></td><td align="left">切换到第 <code>2</code> 个栈帧，以查看信息</td></tr><tr><td align="left"><code>(gdb) up</code></td><td align="left">切换到上一级调用栈帧</td></tr><tr><td align="left"><code>(gdb) down</code></td><td align="left">切换到下一级调用栈帧</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist"><div class="wrap-header h3wrap"><h3 id="函数调用"><a aria-hidden="true" tabindex="-1" href="#函数调用"><span class="icon icon-link"></span></a>函数调用</h3><div class="wrap-body">
+<p><code>call</code> 和 <code>print</code> 调用的函数如果存在全局变量、静态变量的修改，在函数返回后会恢复到调用之前的值，这两个调用不会影响程序的状态</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) call func(a, b)</code></td><td align="left">调用指定的函数，不影响主线程变量</td></tr><tr><td align="left"><code>(gdb) print func(a, b)</code></td><td align="left">与 <code>call</code> 类似</td></tr><tr><td align="left"><code>(gdb) finish</code></td><td align="left">结束当前运行的函数</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist row-span-2"><div class="wrap-header h3wrap"><h3 id="信号"><a aria-hidden="true" tabindex="-1" href="#信号"><span class="icon icon-link"></span></a>信号</h3><div class="wrap-body">
+<!--rehype:wrap-class=row-span-2-->
+<p><code>linux</code> 下使用 <code>kill -l</code> 查看信号编号与信号名，使用 <code>info signal</code> 查看信号的处理方式、描述等：</p>
+<pre class="language-bash"><code class="language-bash code-highlight"><span class="code-line"><span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> info signal
+</span><span class="code-line">Signal        Stop  Print   Pass to program Description
+</span><span class="code-line">
+</span><span class="code-line">SIGHUP        Yes   Yes     Yes             Hangup
+</span><span class="code-line">SIGINT        Yes   Yes     No              Interrupt
+</span><span class="code-line">SIGQUIT       Yes   Yes     Yes             Quit
+</span><span class="code-line">SIGILL        Yes   Yes     Yes             Illegal instruction
+</span></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) signal SIGKILL</code></td><td align="left">向进程发送信号，用信号名或编号表示</td></tr><tr><td align="left"><code>(gdb) signal 9</code></td><td align="left">向进程发送信号，用信号名或编号表示</td></tr><tr><td align="left"><code>(gdb) handle &#x3C;signal> actions</code></td><td align="left">指定信号的处理方式，选择如下，可以组合</td></tr><tr><td align="left"><code>stop/nostop</code></td><td align="left">收到信号是否停止进程，类似断点</td></tr><tr><td align="left"><code>print/noprint</code></td><td align="left">收到信号是否输出消息</td></tr><tr><td align="left"><code>pass/nopass</code></td><td align="left">是否将信号传递给程序</td></tr></tbody></table>
+</div></div></div><div class="wrap h3body-not-exist"><div class="wrap-header h3wrap"><h3 id="线程"><a aria-hidden="true" tabindex="-1" href="#线程"><span class="icon icon-link"></span></a>线程</h3><div class="wrap-body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th align="left">命令</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left"><code>(gdb) info threads</code></td><td align="left">列出所有线程，标识当前所在线程</td></tr><tr><td align="left"><code>(gdb) thread 2</code></td><td align="left">切换到编号为 <code>2</code> 的线程</td></tr><tr><td align="left"><code>(gdb) break file.c:23 thread all</code></td><td align="left">在所有线程中相应的行上设置断点</td></tr><tr><td align="left"><code>(gdb) thread apply all command</code></td><td align="left">让所有线程执行 <code>gdb</code> 命令</td></tr><tr><td align="left"><code>(gdb) thread apply ID1 ID2 command</code></td><td align="left">让指定线程执行 <code>gdb</code> 命令</td></tr><tr><td align="left"><code>(gdb) set scheduler-locking off</code></td><td align="left">所有线程都执行，这是默认值</td></tr><tr><td align="left"><code>(gdb) set scheduler-locking on</code></td><td align="left">只让当前线程执行</td></tr></tbody></table>
+</div></div></div></div></div><div class="wrap h2body-not-exist"><div class="wrap-header h2wrap"><h2 id="另见"><a aria-hidden="true" tabindex="-1" href="#另见"><span class="icon icon-link"></span></a>另见</h2><div class="wrap-body">
+<ul>
+<li><a href="https://carlyleliu.github.io/2022/%E5%BA%94%E7%94%A8%E5%B4%A9%E6%BA%83%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90">应用崩溃调试分析</a></li>
+</ul>
+</div></div><div class="h2wrap-body"></div></div></div></div><footer class="footer-wrap"><footer class="max-container">Quick Reference<br></footer></footer><script src="..\/data.js?v=1.3.4" defer></script><script src="..\/js/fuse.min.js?v=1.3.4" defer></script><script src="..\/js/main.js?v=1.3.4" defer></script><div id="mysearch"><div class="mysearch-box"><div class="mysearch-input"><div><svg xmlns="http://www.w3.org/2000/svg" height="1em" width="1em" viewBox="0 0 18 18">
+  <path fill="currentColor" d="M17.71,16.29 L14.31,12.9 C15.4069846,11.5024547 16.0022094,9.77665502 16,8 C16,3.581722 12.418278,0 8,0 C3.581722,0 0,3.581722 0,8 C0,12.418278 3.581722,16 8,16 C9.77665502,16.0022094 11.5024547,15.4069846 12.9,14.31 L16.29,17.71 C16.4777666,17.8993127 16.7333625,18.0057983 17,18.0057983 C17.2666375,18.0057983 17.5222334,17.8993127 17.71,17.71 C17.8993127,17.5222334 18.0057983,17.2666375 18.0057983,17 C18.0057983,16.7333625 17.8993127,16.4777666 17.71,16.29 Z M2,8 C2,4.6862915 4.6862915,2 8,2 C11.3137085,2 14,4.6862915 14,8 C14,11.3137085 11.3137085,14 8,14 C4.6862915,14 2,11.3137085 2,8 Z"></path>
+</svg><input id="mysearch-input" type="search" placeholder="搜索备忘清单" autocomplete="off"><div class="mysearch-clear"></div></div><button id="mysearch-close" type="button">取消</button></div><div class="mysearch-result"><div id="mysearch-menu"></div><div id="mysearch-content"></div></div></div></div></body>
+</html>
