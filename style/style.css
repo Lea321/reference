@@ -332,14 +332,7 @@ pre {
 
 .max-container a,
 .max-container a:visited {
-  background-image: linear-gradient(transparent, transparent 6px, #34495e 6px, #34495e);
-  background-position: bottom;
-  background-size: 100% 6px;
-  background-repeat: repeat-x;
-  text-decoration-line: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
-  text-decoration-color: transparent;
+  text-decoration: none;
 }
 
 .max-container a:hover,
@@ -528,14 +521,14 @@ body.home .max-container a.home-button:visited:hover {
   color: var(--color-fg-default);
   --text-opacity: 0.75;
   color: rgb(241 245 249 / var(--text-opacity));
-  --bg-opacity: 0.5;
+  --bg-opacity: 0.4;
   background-color: rgb(62 69 72 / var(--bg-opacity));
   transition: all 0.3s;
   text-decoration: none;
 }
 
 .home-card a:hover {
-  --bg-opacity: 1;
+  --bg-opacity: .8;
   --text-opacity: 0.75;
 }
 
@@ -643,13 +636,13 @@ nav.header-nav {
   gap: 0.75rem;
 }
 
-/* .header-nav .menu .searchbtn span:last-child {
-  transition: all 0.3s;
-  border: 1px solid var(--color-border-default);
-  border-radius: 0.4rem;
-  padding: 1px 1px 1px 3px;
-  letter-spacing: 3px;
-} */
+.header-nav .menu .searchbtn+a {
+  display: none;
+}
+
+.header-nav .menu .searchbtn span:last-child {
+  display: none;
+}
 
 /* .header-nav .menu .searchbtn:hover span:last-child {
   border-color: var(--primary-color);
